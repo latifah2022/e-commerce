@@ -7,7 +7,9 @@ router.get('/', async (req, res) => {
   // find all tags
   // be sure to include its associated Product data
   try {
-    const tagg = await Tag.findAll();
+    const tagg = await Tag.findAll({
+      include: [{ model: Product, through: ProductTag}]
+    });
     res.status(200).json(tagg);
   } catch (err) {
     res.status(404).json(err);
@@ -24,7 +26,7 @@ router.get('/:id', async (req, res) => {
       });
     if(!tagg){
       res.status(404).json({
-        message: "No location found"
+        message: "Not found"
       })
       return;
     } 
@@ -37,7 +39,9 @@ router.get('/:id', async (req, res) => {
 router.post('/', async (req, res) => {
   // create a new tag
   try {
-    const tagg = await Tag.create(req.body)
+    const tagg = await Tag.create({
+      tag_name: req.body.tag_name
+    })
     res.status(200).json(tagg)
   } catch (err) {
     res.status(404).json(err)
@@ -49,7 +53,7 @@ router.put('/:id', async (req, res) => {
   try {
     const tagg = await Tag.update({tag_name: req.body.tag_name}, {where: {id: req.params.id}});
     if (!tagg){
-      res.status(404).json({message: "Location not found"})
+      res.status(404).json({message: "Not found"})
       return;
     } else {
       return res.status(200).json(tagg);
@@ -64,7 +68,7 @@ router.delete('/:id', async (req, res) => {
   try {
     const tagg = await Tag.destroy( {where: {id: req.params.id}});
     if (!tagg){
-      res.status(404).json({message: "Location not found"});
+      res.status(404).json({message: "Not found"});
     } else {
       return res.status(200).json(tagg)
     }
