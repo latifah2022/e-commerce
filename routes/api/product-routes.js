@@ -37,22 +37,7 @@ router.get('/:id', async (req, res) => {
   }
 });
 
-// create new product
-router.post('/', async (req, res) => {
-  try{
-    const product = await Product.findByPk(req.params.id, {
-      include: Category, 
-      include: Tag
-    });
-    if(!product) {
-      res.status(404).json({ message: "Not found" })
-      return;
-    }
-    res.status(200).json(product);
-  } catch (err) {
-    res.status(500).json(err);
-  }
-});
+
   /* req.body should look like this...
     {
       product_name: "Basketball",
@@ -62,6 +47,7 @@ router.post('/', async (req, res) => {
     }
   */
 
+router.post('/', (req, res) => {
 Product.create(req.body)
   .then((product) => {
     // if there's product tags, we need to create pairings to bulk create in the ProductTag model
@@ -82,6 +68,7 @@ Product.create(req.body)
     console.log(err);
     res.status(400).json(err);
   });
+});
 
 // update product
 router.put('/:id', (req, res) => {
